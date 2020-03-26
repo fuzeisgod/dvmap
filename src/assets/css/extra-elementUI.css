@@ -1,0 +1,21 @@
+/* 单选框样式 */
+.el-radio {
+    display: flex !important;
+    align-items: center;
+    margin-right: 15px !important;
+}
+
+.el-radio__input {
+    display: flex !important;
+    align-items: center;
+}
+
+/* 按钮样式 */
+.el-button--small {
+    border-radius: 0px !important;
+}
+
+/* 输入框样式 */
+.el-input__inner {
+    border-radius: 0px !important;
+}

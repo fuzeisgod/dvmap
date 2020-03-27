@@ -1,6 +1,8 @@
 <template>
   <div class="dv-index">
-    <div class="dv-header"></div>
+    <div class="dv-header">
+      <span @click="$router.push({path:'/login'})">登录</span>
+    </div>
     <div class="dv-container">
       <div class="dv-list">
         <div class="dv-list-search">
@@ -11,6 +13,30 @@
         </div>
       </div>
       <div class="dv-map">
+        <div class="dv-map-title">
+          <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="实时路径" name="first"></el-tab-pane>
+            <el-tab-pane label="历史路径" name="second">
+              <div class="dv-map-time-block">
+                <el-form>
+                  <el-form-item label="查询时间段">
+                    <el-date-picker
+                      v-model="value"
+                      type="datetimerange"
+                      :picker-options="pickerOptions"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      align="right"
+                      :unlink-panels="true"
+                    ></el-date-picker>
+                    <el-button type="primary">查询</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
         <router-view class="map-container"></router-view>
       </div>
     </div>
@@ -23,21 +49,62 @@
 <script>
 import dvListSearch from "@/components/dv-list-search/dv-list-search";
 import dvListTree from "@/components/dv-list-tree/dv-list-tree";
+import { DatePicker, Form, FormItem, Button, Tabs, TabPane } from "element-ui";
 export default {
   data() {
     return {
-      searchText: ""
+      searchText: "",
+      activeName: "first",
+      value: "",
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
+          }
+        ]
+      }
     };
   },
   components: {
     dvListSearch,
-    dvListTree
+    dvListTree,
+    [DatePicker.name]: DatePicker,
+    [Form.name]: Form,
+    [FormItem.name]: FormItem,
+    [Button.name]: Button,
+    [Tabs.name]: Tabs,
+    [TabPane.name]: TabPane
   },
   methods: {
     search(e) {
       this.searchText = e;
       console.log(e);
-    }
+    },
+    handleClick(tab, event) {}
   }
 };
 </script>
@@ -51,19 +118,17 @@ export default {
   .dv-header {
     height: 100px;
     box-sizing: border-box;
-    border-bottom: 1px solid #ccc;
   }
   .dv-container {
     flex: 1;
     display: flex;
     .dv-list {
-      //   background: papayawhip;
       flex: 1;
       min-width: 250px;
       display: flex;
+      border-top: 1px solid #dcdfe6;
       flex-direction: column;
       .dv-list-search {
-        // height: 50px;
         box-sizing: border-box;
       }
       .dv-list-tree {
@@ -71,9 +136,21 @@ export default {
       }
     }
     .dv-map {
-      background: powderblue;
       flex: 4;
-      .map-container{
+      position: relative;
+      padding: 40px 0 0 0;
+      .dv-map-title {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        .dv-map-time-block {
+          padding: 10px 20px;
+        }
+      }
+      .map-container {
         width: 100%;
         height: 100%;
       }

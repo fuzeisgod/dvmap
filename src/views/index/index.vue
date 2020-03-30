@@ -1,15 +1,26 @@
 <template>
   <div class="dv-index">
     <div class="dv-header">
-      <span @click="$router.push({path:'/login'})">登录</span>
+      <el-button
+        type="primary"
+        icon="el-icon-switch-button"
+        plain
+        style="height:100%;float:right;"
+        @click="$router.push({path:'/login'})"
+      >退出登录</el-button>
     </div>
     <div class="dv-container">
       <div class="dv-list">
         <div class="dv-list-search">
-          <dv-list-search @click="search"></dv-list-search>
+          <dv-list-search @click="search" @change="change"></dv-list-search>
         </div>
         <div class="dv-list-tree">
-          <dv-list-tree :searchText="searchText"></dv-list-tree>
+          <template v-if="parseInt(searchType)===1">
+            <dv-list-tree :searchText="searchText"></dv-list-tree>
+          </template>
+          <template v-else-if="parseInt(searchType)===2">
+            <dv-list-user :searchText="searchText"></dv-list-user>
+          </template>
         </div>
       </div>
       <div class="dv-map">
@@ -49,12 +60,14 @@
 <script>
 import dvListSearch from "@/components/dv-list-search/dv-list-search";
 import dvListTree from "@/components/dv-list-tree/dv-list-tree";
+import dvListUser from "@/components/dv-list-user/dv-list-user";
 import { DatePicker, Form, FormItem, Button, Tabs, TabPane } from "element-ui";
 export default {
   data() {
     return {
       searchText: "",
       activeName: "first",
+      searchType: 1,
       value: "",
       pickerOptions: {
         shortcuts: [
@@ -92,6 +105,7 @@ export default {
   components: {
     dvListSearch,
     dvListTree,
+    dvListUser,
     [DatePicker.name]: DatePicker,
     [Form.name]: Form,
     [FormItem.name]: FormItem,
@@ -103,6 +117,9 @@ export default {
     search(e) {
       this.searchText = e;
       console.log(e);
+    },
+    change(e) {
+      this.searchType = e;
     },
     handleClick(tab, event) {}
   }
@@ -116,7 +133,7 @@ export default {
   display: flex;
   flex-direction: column;
   .dv-header {
-    height: 100px;
+    height: 50px;
     box-sizing: border-box;
   }
   .dv-container {
@@ -147,7 +164,7 @@ export default {
         right: 0;
         z-index: 2;
         .dv-map-time-block {
-          padding: 10px 20px;
+          padding: 10px 20px 0 20px;
         }
       }
       .map-container {
@@ -161,9 +178,13 @@ export default {
     box-sizing: border-box;
     border-top: 1px solid #ccc;
     display: flex;
-    font-size: 13px;
+    font-size: 12px;
     justify-content: center;
     align-items: center;
   }
+}
+/* 表单元素样式 */
+/deep/.el-form-item {
+  margin-bottom: 10px !important;
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
   <div class="tree-box">
+    <div class="addArea" @click="dialogVisible_area=true">
+      <i class="el-icon-circle-plus-outline"></i>添加区域
+    </div>
     <el-tree
       :data="data"
       :props="defaultProps"
@@ -16,29 +19,70 @@
         <li @click="remove">删除节点</li>
       </ul>
     </div>
-    <el-dialog title="添加设备信息" :visible.sync="dialogVisible" width="30%">
-      <el-form ref="form" :model="form" label-width="80px">
+    <!-- 添加设备 -->
+    <el-dialog
+      title="添加设备"
+      :visible.sync="dialogVisible_device"
+      :before-close="handleClose_device"
+      width="30%"
+    >
+      <el-form :model="form" label-width="80px">
         <el-form-item label="设备ID">
           <el-input v-model="form.terminalID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="节点名称">
+        <el-form-item label="设备名称">
           <el-input v-model="form.nodeName" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="操作人员">
+          <el-input v-model="form.name" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话">
+          <el-input v-model="form.phone" clearable></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancelAdd">取 消</el-button>
-        <el-button type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button @click="cancelAdd_device">取 消</el-button>
+        <el-button type="primary" @click="confirmAdd_device">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 添加区域 -->
+    <el-dialog
+      title="添加区域"
+      :visible.sync="dialogVisible_area"
+      :before-close="handleClose_area"
+      width="30%"
+    >
+      <el-form :model="area" label-width="80px">
+        <el-form-item label="区域ID">
+          <el-input v-model="area.areaID" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="区域名称">
+          <el-input v-model="area.areaName" clearable></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelAdd_area">取 消</el-button>
+        <el-button type="primary" @click="confirmAdd_area">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { Tree, Dialog, Button, Form, Input, FormItem } from "element-ui";
+import {
+  Tree,
+  Dialog,
+  Button,
+  Form,
+  Input,
+  FormItem,
+  MessageBox
+} from "element-ui";
 export default {
   data() {
     return {
-      dialogVisible: false,
+      dialogVisible_device: false,
+      dialogVisible_area: false,
       data: [
         {
           id: 1,
@@ -90,7 +134,13 @@ export default {
       },
       form: {
         terminalID: "",
-        nodeName: ""
+        nodeName: "",
+        name: "",
+        phone: ""
+      },
+      area: {
+        areaID: "",
+        areaName: ""
       }
     };
   },
@@ -101,7 +151,8 @@ export default {
     [Button.name]: Button,
     [Form.name]: Form,
     [Input.name]: Input,
-    [FormItem.name]: FormItem
+    [FormItem.name]: FormItem,
+    [MessageBox.name]: MessageBox
   },
   watch: {
     searchText(val) {
@@ -128,26 +179,59 @@ export default {
       menu.style.left = event.pageX + 20 + "px";
     },
     addSon() {
-      this.dialogVisible = true;
+      this.dialogVisible_device = true;
     },
-    cancelAdd() {
-      this.dialogVisible = false;
+    cancelAdd_device() {
+      this.dialogVisible_device = false;
     },
-    confirmAdd() {
-      this.dialogVisible = false;
+    cancelAdd_area() {
+      this.dialogVisible_area = false;
+    },
+    confirmAdd_device() {
+      this.dialogVisible_device = false;
       let data = {
         id: this.form.terminalID,
         label: this.form.nodeName
       };
       this.$refs.tree.append(data, this.selectedNode.data);
-      console.log(this.data);
+    },
+    confirmAdd_area() {
+      this.dialogVisible_area = false;
+      let node = {
+        id: this.area.areaID,
+        label: this.area.areaName,
+        children: []
+      };
+      this.data.push(node);
     },
     remove() {
-      this.$refs.tree.remove(this.selectedNode.data);
+      MessageBox.confirm("确认删除该节点?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$refs.tree.remove(this.selectedNode.data);
+        })
+        .catch(() => {
+          console.log("取消删除");
+        });
     },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
+    },
+    handleClose_device(done) {
+      for (let key in this.form) {
+        this.form[key] = "";
+      }
+      done();
+    },
+    handleClose_area(done) {
+      for (let key in this.area) {
+        this.area[key] = "";
+      }
+      done();
     }
   }
 };
@@ -158,6 +242,21 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  .addArea {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    border-bottom: 1px solid #dcdfe6;
+    padding: 5px 8px;
+    color: #606266;
+    cursor: pointer;
+    i {
+      margin-right: 5px;
+    }
+  }
+  .addArea:hover {
+    background: #eeeeee;
+  }
   #menu {
     border: 1px solid #abadb3;
     width: 150px;

@@ -24,11 +24,6 @@
     border-radius: 0px !important;
 }
 
-/* 表单元素样式 */
-.el-form-item {
-    margin-bottom: 0 !important;
-}
-
 /* tabbar样式 */
 .el-tabs__content {
     padding: 0 !important;

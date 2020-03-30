@@ -2,8 +2,10 @@
   <div class="search-box">
     <div class="search-type">
       <div class="type-title">查询类型</div>
-      <el-radio v-model="radio" label="1">设备ID</el-radio>
-      <el-radio v-model="radio" label="2">操作人员</el-radio>
+      <el-radio-group v-model="radio" @change="changeRadio">
+        <el-radio label="1">设备ID</el-radio>
+        <el-radio label="2">操作人员</el-radio>
+      </el-radio-group>
     </div>
     <div class="search-content">
       <div class="search-input">
@@ -24,7 +26,7 @@
 </template>
 
 <script>
-import { Radio, Input, Button } from "element-ui";
+import { Radio, RadioGroup, Input, Button } from "element-ui";
 export default {
   data() {
     return {
@@ -35,7 +37,8 @@ export default {
   components: {
     [Radio.name]: Radio,
     [Input.name]: Input,
-    [Button.name]: Button
+    [Button.name]: Button,
+    [RadioGroup.name]: RadioGroup
   },
   methods: {
     change() {
@@ -43,6 +46,9 @@ export default {
     },
     search() {
       this.$emit("click", this.input);
+    },
+    changeRadio(e) {
+      this.$emit('change', e)
     }
   }
 };
@@ -76,5 +82,8 @@ export default {
       flex: 1;
     }
   }
+}
+/deep/.el-radio-group{
+  display: flex;
 }
 </style>

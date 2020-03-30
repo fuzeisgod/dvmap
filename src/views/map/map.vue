@@ -72,9 +72,9 @@ export default {
     },
     addLine() {
       var sy = new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_OPEN_ARROW, {
-        scale: 0.6, //图标缩放大小
+        scale: 0.8, //图标缩放大小
         strokeColor: "#fff", //设置矢量图标的线填充颜色
-        strokeWeight: "1" //设置线宽
+        strokeWeight: "2" //设置线宽
       });
       var icons = new BMap.IconSequence(sy, "10", "30");
       // 创建polyline对象
@@ -92,6 +92,12 @@ export default {
         strokeOpacity: 0.8, //折线的透明度，取值范围0 - 1
         strokeColor: "#5300FC" //折线颜色
       });
+      var start = new BMap.Marker(pois[0]);
+      start.setLabel(new BMap.Label("起点"));
+      this.map.addOverlay(start);
+      var end = new BMap.Marker(pois[pois.length - 1]);
+      end.setLabel(new BMap.Label("终点"));
+      this.map.addOverlay(end);
 
       this.map.addOverlay(polyline); //增加折线
     }
